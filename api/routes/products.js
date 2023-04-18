@@ -119,7 +119,9 @@ router.get("/", (request, response) => {
     const query = `SELECT product.id,
     product.product_name,
     product.price,
+    product.priceold,
     product.quantity,
+    product.sold,
     product.supplier,
     product.image,
     product.category,
@@ -128,6 +130,10 @@ router.get("/", (request, response) => {
     product.origin,
     product.sex,
     product.skinproblems,
+    product.addtocart,
+    product.addtofavorite,
+    product.share,
+    product.rain,
     product.active,
     (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
     (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
@@ -144,7 +150,18 @@ router.get("/", (request, response) => {
         })
     });
 }); 
-
+// Get product by id
+router.get("/productdetail/:id", (request, response) => {
+    const id = request.params.id;
+    const query = "SELECT * FROM product WHERE id = ?"
+    const args = [id]
+    database.query(query, args, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "products" : result
+        })
+    });
+});
 // Search for products
 router.get("/search", (request, response) => {
     const user_id = request.query.userId;
@@ -181,7 +198,9 @@ router.get("/search", (request, response) => {
     const query = `SELECT product.id,
     product.product_name,
     product.price,
+    product.priceold,
     product.quantity,
+    product.sold,
     product.supplier,
     product.image,
     product.category,
@@ -190,6 +209,10 @@ router.get("/search", (request, response) => {
     product.origin,
     product.sex,
     product.skinproblems,
+    product.addtocart,
+    product.addtofavorite,
+    product.share,
+    product.rain,
     product.active,
     (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
     (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
@@ -290,6 +313,367 @@ router.put("/update", uploadImage.single('image'), (request, response) => {
         }
     });
 
+});
+//Nhung san pham dược yêu thích
+router.get("/favorite", (request, response) => {
+    const user_id = request.query.userId;
+    var page = request.query.page;
+    var page_size = request.query.page_size;
+
+    if(page == null || page < 1){
+        page = 1;
+    }
+ 
+    if(page_size == null){
+        page_size = 20;
+    }
+
+    // OFFSET starts from zero
+    const offset = page - 1;
+    // OFFSET * LIMIT
+    page = offset * page_size;
+
+    const args = [
+        user_id,
+        user_id,
+        parseInt(page_size),
+        parseInt(page)
+    ];
+
+    const query = `SELECT product.id,
+    product.product_name,
+    product.price,
+    product.priceold,
+    product.quantity,
+    product.sold,
+    product.supplier,
+    product.image,
+    product.category,
+    product.describe,
+    product.trademark,
+    product.origin,
+    product.sex,
+    product.skinproblems,
+    product.addtocart,
+    product.addtofavorite,
+    product.share,
+    product.rain,
+    product.active,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
+    FROM product 
+    ORDER BY addtofavorite DESC
+    LIMIT ? OFFSET ?`;
+
+    database.query(query, args, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "page": offset + 1,
+            "error" : false,
+            "products" : result
+        })
+    });
+});
+//Nhung san pham dược quan tâm nhiều nhất
+router.get("/cart", (request, response) => {
+    const user_id = request.query.userId;
+    var page = request.query.page;
+    var page_size = request.query.page_size;
+
+    if(page == null || page < 1){
+        page = 1;
+    }
+ 
+    if(page_size == null){
+        page_size = 20;
+    }
+
+    // OFFSET starts from zero
+    const offset = page - 1;
+    // OFFSET * LIMIT
+    page = offset * page_size;
+
+    const args = [
+        user_id,
+        user_id,
+        parseInt(page_size),
+        parseInt(page)
+    ];
+
+    const query = `SELECT product.id,
+    product.product_name,
+    product.price,
+    product.priceold,
+    product.quantity,
+    product.sold,
+    product.supplier,
+    product.image,
+    product.category,
+    product.describe,
+    product.trademark,
+    product.origin,
+    product.sex,
+    product.skinproblems,
+    product.addtocart,
+    product.addtofavorite,
+    product.share,
+    product.rain,
+    product.active,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
+    FROM product 
+    ORDER BY addtocart DESC
+    LIMIT ? OFFSET ?`;
+
+    database.query(query, args, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "page": offset + 1,
+            "error" : false,
+            "products" : result
+        })
+    });
+});
+//Nhung san pham dược chia sẻ nhiều nhất
+router.get("/share", (request, response) => {
+    const user_id = request.query.userId;
+    var page = request.query.page;
+    var page_size = request.query.page_size;
+
+    if(page == null || page < 1){
+        page = 1;
+    }
+ 
+    if(page_size == null){
+        page_size = 20;
+    }
+
+    // OFFSET starts from zero
+    const offset = page - 1;
+    // OFFSET * LIMIT
+    page = offset * page_size;
+
+    const args = [
+        user_id,
+        user_id,
+        parseInt(page_size),
+        parseInt(page)
+    ];
+
+    const query = `SELECT product.id,
+    product.product_name,
+    product.price,
+    product.priceold,
+    product.quantity,
+    product.sold,
+    product.supplier,
+    product.image,
+    product.category,
+    product.describe,
+    product.trademark,
+    product.origin,
+    product.sex,
+    product.skinproblems,
+    product.addtocart,
+    product.addtofavorite,
+    product.share,
+    product.rain,
+    product.active,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
+    FROM product 
+    ORDER BY share DESC
+    LIMIT ? OFFSET ?`;
+
+    database.query(query, args, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "page": offset + 1,
+            "error" : false,
+            "products" : result
+        })
+    });
+})
+//Nhung san pham dược mua nhiều nhất
+router.get("/sold", (request, response) => {
+    const user_id = request.query.userId;
+    var page = request.query.page;
+    var page_size = request.query.page_size;
+
+    if(page == null || page < 1){
+        page = 1;
+    }
+ 
+    if(page_size == null){
+        page_size = 20;
+    }
+
+    // OFFSET starts from zero
+    const offset = page - 1;
+    // OFFSET * LIMIT
+    page = offset * page_size;
+
+    const args = [
+        user_id,
+        user_id,
+        parseInt(page_size),
+        parseInt(page)
+    ];
+
+    const query = `SELECT product.id,
+    product.product_name,
+    product.price,
+    product.priceold,
+    product.quantity,
+    product.sold,
+    product.supplier,
+    product.image,
+    product.category,
+    product.describe,
+    product.trademark,
+    product.origin,
+    product.sex,
+    product.skinproblems,
+    product.addtocart,
+    product.addtofavorite,
+    product.share,
+    product.rain,
+    product.active,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
+    FROM product 
+    ORDER BY sold DESC
+    LIMIT ? OFFSET ?`;
+
+    database.query(query, args, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "page": offset + 1,
+            "error" : false,
+            "products" : result
+        })
+    });
+})
+//Nhung san pham chat luong cao
+router.get("/rain", (request, response) => {
+    const user_id = request.query.userId;
+    var page = request.query.page;
+    var page_size = request.query.page_size;
+
+    if(page == null || page < 1){
+        page = 1;
+    }
+ 
+    if(page_size == null){
+        page_size = 20;
+    }
+
+    // OFFSET starts from zero
+    const offset = page - 1;
+    // OFFSET * LIMIT
+    page = offset * page_size;
+
+    const args = [
+        user_id,
+        user_id,
+        parseInt(page_size),
+        parseInt(page)
+    ];
+
+    const query = `SELECT product.id,
+    product.product_name,
+    product.price,
+    product.priceold,
+    product.quantity,
+    product.sold,
+    product.supplier,
+    product.image,
+    product.category,
+    product.describe,
+    product.trademark,
+    product.origin,
+    product.sex,
+    product.skinproblems,
+    product.addtocart,
+    product.addtofavorite,
+    product.share,
+    product.rain,
+    product.active,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
+    (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
+    FROM product 
+    ORDER BY rain DESC
+    LIMIT ? OFFSET ?`;
+
+    database.query(query, args, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "page": offset + 1,
+            "error" : false,
+            "products" : result
+        })
+    });
+})
+// flash sale
+router.get("/flashsale", (request, response) => {
+    const user_id = request.query.userId;
+    var page = request.query.page;
+    var page_size = request.query.page_size;
+
+    if (page == null || page < 1) {
+        page = 1;
+    }
+
+    if (page_size == null) {
+        page_size = 20;
+    }
+
+    // OFFSET starts from zero
+    const offset = page - 1;
+    // OFFSET * LIMIT
+    page = offset * page_size; // 20
+
+    const args = [
+        user_id,
+        user_id,
+        parseInt(page_size),
+        parseInt(page)
+    ];
+
+    const query = `SELECT product.id,
+        product.product_name,
+        product.price,
+        product.priceold,
+        product.quantity,
+        product.sold,
+        product.supplier,
+        product.image,
+        product.category,
+        product.describe,
+        product.trademark,
+        product.origin,
+        product.sex,
+        product.skinproblems,
+        product.addtocart,
+        product.addtofavorite,
+        product.share,
+        product.rain,
+        product.active,
+        (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite,
+        (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM cart WHERE cart.user_id = ? AND cart.product_id = product.id) as isInCart
+        FROM product 
+        WHERE price < priceold
+        ORDER BY ((priceold - price) / priceold) DESC
+        LIMIT ? OFFSET ?`;
+
+    database.query(query, args, (error, result) => {
+        if (error) throw error
+        response.status(200).json({
+            "page": offset + 1,
+            "error": false,
+            "products": result
+        })
+    });
 });
 
 module.exports = router
