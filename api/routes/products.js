@@ -62,6 +62,30 @@ router.get("/all", (request, response) => {
     })
 });
 
+//Get category
+router.get("/category", (request, response) => {
+    const query ="SELECT DISTINCT category FROM product"
+    database.query(query, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "listCategory" : result
+        })
+    });
+})
+//Get all product by category
+router.get("/probycate", (request, response) => {
+    const category = request.query.category
+    const query ="SELECT * FROM product WHERE category = ? ";
+    const args = [
+        category
+    ];
+    database.query(query, args, (error, result) => {
+        if(error) throw error
+        response.status(200).json({
+            "listProductbyCate" : result
+        })
+    });
+})
 // Get products by category
 router.get("/", (request, response) => {
     const user_id = request.query.userId;
