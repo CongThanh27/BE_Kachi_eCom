@@ -555,7 +555,7 @@ router.get("/sold", (request, response) => {
     });
 })
 //Nhung san pham chat luong cao
-router.get("/rain", (request, response) => {
+router.get("/rate", (request, response) => {
     const user_id = request.query.userId;
     var page = request.query.page;
     var page_size = request.query.page_size;
