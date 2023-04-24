@@ -30,3 +30,13 @@ const connectionPool = mysql.createPool({
  });
 
 module.exports = connectionPool;
+// =======
+//     host: 'btzfghji8c4n84oyb1va-mysql.services.clever-cloud.com',
+//     user: 'uagudj4doikmrp1o',
+//     password: 'bPuel4XijUujYaEe9SzX',
+//     database: 'btzfghji8c4n84oyb1va',
+//     queueLimit: 0
+//  })
+
+// module.exports = connectionPool;
+// >>>>>>> d4110b46e6e4a130fcd9c52c277d6e1c13005a30
