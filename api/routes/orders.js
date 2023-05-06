@@ -144,4 +144,13 @@ router.get("/get", (request, response) => {
     })
 });
 
+router.get("/AdAll", (request, response) => {
+    const query = `SELECT * FROM ordering `
+    database.query(query, (error, result) => {
+        if(error) throw error
+        response.status(200).json({           
+            "orders" : result
+        })
+    });
+});
 module.exports = router

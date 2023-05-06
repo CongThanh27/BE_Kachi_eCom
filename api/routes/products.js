@@ -33,11 +33,11 @@ router.get("/all", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -50,39 +50,39 @@ router.get("/all", (request, response) => {
         parseInt(page_size),
         parseInt(page)
     ];
-    
+
     const query = "SELECT * FROM product LIMIT ? OFFSET ?"
-    database.query(query,args, (error, result) => {
-        if(error) throw error;
+    database.query(query, args, (error, result) => {
+        if (error) throw error;
         response.status(200).json({
             "page": page + 1,
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     })
 });
 
 //Get category
 router.get("/category", (request, response) => {
-    const query ="SELECT DISTINCT category FROM product"
+    const query = "SELECT DISTINCT category FROM product"
     database.query(query, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
-            "listCategory" : result
+            "listCategory": result
         })
     });
 })
 //Get all product by category
 router.get("/probycate", (request, response) => {
     const category = request.query.category
-    const query ="SELECT * FROM product WHERE category = ? ";
+    const query = "SELECT * FROM product WHERE category = ? ";
     const args = [
         category
     ];
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
-            "listProductbyCate" : result
+            "listProductbyCate": result
         })
     });
 })
@@ -94,11 +94,11 @@ router.get("/", (request, response) => {
     var page_size = request.query.page_size;
 
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -125,7 +125,7 @@ router.get("/", (request, response) => {
     product.supplier,
     product.image,
     product.category,
-    product.describe,
+    product.description,
     product.trademark,
     product.origin,
     product.sex,
@@ -142,23 +142,23 @@ router.get("/", (request, response) => {
     LIMIT ? OFFSET ?`;
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
             "page": offset + 1,  //2
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     });
-}); 
+});
 // Get product by id
 router.get("/productdetail/:id", (request, response) => {
     const id = request.params.id;
     const query = "SELECT * FROM product WHERE id = ?"
     const args = [id]
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
-            "products" : result
+            "products": result
         })
     });
 });
@@ -169,11 +169,11 @@ router.get("/search", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -204,7 +204,7 @@ router.get("/search", (request, response) => {
     product.supplier,
     product.image,
     product.category,
-    product.describe,
+    product.description,
     product.trademark,
     product.origin,
     product.sex,
@@ -222,14 +222,14 @@ router.get("/search", (request, response) => {
 
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
             "page": page + 1,
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     });
-}); 
+});
 
 // Insert Product
 router.post("/insert", checkAuth, uploadImage.single('image'), (request, response) => {
@@ -238,27 +238,27 @@ router.post("/insert", checkAuth, uploadImage.single('image'), (request, respons
     const quantity = request.body.quantity
     const supplier = request.body.supplier
     const category = request.body.category
-    const describe = request.body.describe
+    const description= request.body.describe
     const trademark = request.body.trademark
     const origin = request.body.origin
     const sex = request.body.sex
     const skinproblems = request.body.skinproblems
 
-    
+
     const file = request.file;
     var filePath = ""
-    if(file != null){
+    if (file != null) {
         filePath = file.path
     }
-   
-    const query = "INSERT INTO product(product_name, price, quantity, supplier, category, image, describe, trademark, origin, sex, skinproblems, active) VALUES(?, ?, ?, ?, ?,?)"
-        
-    const args = [name, price, quantity, supplier, category, filePath, describe, trademark, origin,sex, skinproblems, 1 ]
 
-        database.query(query, args, (error, result) => {
-            if (error) throw error
-            response.status(200).send("Product Inserted")
-        });
+    const query = "INSERT INTO product(product_name, price, quantity, supplier, category, image, describe, trademark, origin, sex, skinproblems, active) VALUES(?, ?, ?, ?, ?,?)"
+
+    const args = [name, price, quantity, supplier, category, filePath, describe, trademark, origin, sex, skinproblems, 1]
+
+    database.query(query, args, (error, result) => {
+        if (error) throw error
+        response.status(200).send("Product Inserted")
+    });
 });
 
 // Delete Product
@@ -269,7 +269,7 @@ router.delete("/:id", (request, response) => {
     const args = [id]
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).send("Product is deleted")
     });
 });
@@ -277,10 +277,9 @@ router.delete("/:id", (request, response) => {
 // Update image of product
 router.put("/update", uploadImage.single('image'), (request, response) => {
     const id = request.body.id;
-    
     const file = request.file;
     var filePath = ""
-    if(file != null){
+    if (file != null) {
         filePath = file.path
     }
 
@@ -288,7 +287,7 @@ router.put("/update", uploadImage.single('image'), (request, response) => {
     database.query(selectQuery, id, (error, result) => {
 
         console.log(result)
-        if(error) throw error
+        if (error) throw error
         try {
             // Get value from key image
             var image = result[0]['image'];
@@ -299,16 +298,16 @@ router.put("/update", uploadImage.single('image'), (request, response) => {
         }
     });
 
-    const query = "UPDATE product SET image = ? WHERE id = ?"  
-    
-    const args = [filePath,id]
+    const query = "UPDATE product SET image = ? WHERE id = ?"
+
+    const args = [filePath, id]
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
 
-        if(result['affectedRows']  == 1){
+        if (result['affectedRows'] == 1) {
             response.status(200).send("Product Image is updated")
-        }else{
+        } else {
             response.status(500).send("Invalid Update")
         }
     });
@@ -320,11 +319,11 @@ router.get("/favorite", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -349,7 +348,7 @@ router.get("/favorite", (request, response) => {
     product.supplier,
     product.image,
     product.category,
-    product.describe,
+    product.description,
     product.trademark,
     product.origin,
     product.sex,
@@ -366,11 +365,11 @@ router.get("/favorite", (request, response) => {
     LIMIT ? OFFSET ?`;
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
             "page": offset + 1,
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     });
 });
@@ -380,11 +379,11 @@ router.get("/cart", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -409,7 +408,7 @@ router.get("/cart", (request, response) => {
     product.supplier,
     product.image,
     product.category,
-    product.describe,
+    product.description,
     product.trademark,
     product.origin,
     product.sex,
@@ -426,11 +425,11 @@ router.get("/cart", (request, response) => {
     LIMIT ? OFFSET ?`;
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
             "page": offset + 1,
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     });
 });
@@ -440,11 +439,11 @@ router.get("/share", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -469,7 +468,7 @@ router.get("/share", (request, response) => {
     product.supplier,
     product.image,
     product.category,
-    product.describe,
+    product.description,
     product.trademark,
     product.origin,
     product.sex,
@@ -486,11 +485,11 @@ router.get("/share", (request, response) => {
     LIMIT ? OFFSET ?`;
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
             "page": offset + 1,
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     });
 })
@@ -500,11 +499,11 @@ router.get("/sold", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -529,7 +528,7 @@ router.get("/sold", (request, response) => {
     product.supplier,
     product.image,
     product.category,
-    product.describe,
+    product.description,
     product.trademark,
     product.origin,
     product.sex,
@@ -546,11 +545,11 @@ router.get("/sold", (request, response) => {
     LIMIT ? OFFSET ?`;
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
             "page": offset + 1,
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     });
 })
@@ -560,11 +559,11 @@ router.get("/rate", (request, response) => {
     var page = request.query.page;
     var page_size = request.query.page_size;
 
-    if(page == null || page < 1){
+    if (page == null || page < 1) {
         page = 1;
     }
- 
-    if(page_size == null){
+
+    if (page_size == null) {
         page_size = 20;
     }
 
@@ -589,7 +588,7 @@ router.get("/rate", (request, response) => {
     product.supplier,
     product.image,
     product.category,
-    product.describe,
+    product.description,
     product.trademark,
     product.origin,
     product.sex,
@@ -606,11 +605,11 @@ router.get("/rate", (request, response) => {
     LIMIT ? OFFSET ?`;
 
     database.query(query, args, (error, result) => {
-        if(error) throw error
+        if (error) throw error
         response.status(200).json({
             "page": offset + 1,
-            "error" : false,
-            "products" : result
+            "error": false,
+            "products": result
         })
     });
 })
@@ -649,7 +648,7 @@ router.get("/flashsale", (request, response) => {
         product.supplier,
         product.image,
         product.category,
-        product.describe,
+        product.description,
         product.trademark,
         product.origin,
         product.sex,
@@ -676,4 +675,138 @@ router.get("/flashsale", (request, response) => {
     });
 });
 
+// Get All products not phân trang
+router.get("/AdAll", (request, response) => {
+    const query = `SELECT * FROM product `
+    database.query(query, (error, result) => {
+        if (error) throw error
+        response.status(200).json({
+            "products": result
+        })
+    });
+});
+
+// Ad Update product
+//thực hiện việc lấy đường dẫn của tệp ảnh của một sản phẩm dựa trên id và sau đó xóa tệp ảnh đó.
+//Việc xóa tệp ảnh cũ là cần thiết để tránh việc lưu trữ nhiều tệp ảnh không cần thiết trong hệ thống.
+//Nó giúp tối ưu hóa lưu trữ và đảm bảo rằng chỉ có tệp ảnh mới nhất được lưu trữ trong hệ thống.
+//Xóa tệp ảnh của sản phẩm bằng cách sử dụng hàm unlinkSync của fs (file system module) trong Node.js
+// if(result['affectedRows'] == 1){...}else{...}: 
+// Kết quả truy vấn được trả về trong biến result bao gồm số 
+// lượng bản ghi ảnh hưởng bởi truy vấn (thường là số lượng bản ghi được cập nhật).
+// Nếu affectedRows là 1, nghĩa là truy vấn đã cập nhật thành công một bản ghiF
+//product_name: currentProductName -> lấy giá trị thuộc tính product_name từ result[0] và gán vào biến currentProductName
+router.put("/adupdate", uploadImage.single('image'), (request, response) => {
+    const id = request.body.id;
+    const { 
+        product_name, 
+        price, 
+        priceold, 
+        quantity, 
+        sold, 
+        supplier, 
+        category, 
+        description, 
+        trademark, 
+        origin, 
+        sex, 
+        skinproblems, 
+        addtocart, 
+        addtofavorite, 
+        share, 
+        rain, 
+        active 
+    } = request.body;
+    const file = request.file;
+    var filePath = ""
+    if (file != null) {
+        filePath = file.path
+    }
+    // Lấy thông tin sản phẩm hiện có trong database
+    const selectQuery = "SELECT * FROM product WHERE id = ?";
+    database.query(selectQuery, id, (error, result) => {
+        if (error) throw error;
+        // Lấy giá trị của các thuộc tính hiện tại
+        const {
+            product_name: currentProductName,
+            price: currentPrice,
+            priceold: currentPriceOld,
+            quantity: currentQuantity,
+            sold: currentSold,
+            supplier: currentSupplier,
+            image: currentImage,
+            category: currentCategory,
+            description: currentDescribe,
+            trademark: currentTrademark,
+            origin: currentOrigin,
+            sex: currentSex,
+            skinproblems: currentSkinProblems,
+            addtocart: currentAddToCart,
+            addtofavorite: currentAddToFavorite,
+            share: currentShare,
+            rain: currentRain,
+            active: currentActive,
+        } = result[0];
+        // Sử dụng giá trị từ database nếu các thuộc tính bị thiếu
+        const updatedProductName = product_name || currentProductName;
+        const updatedPrice = price || currentPrice;
+        const updatedPriceOld = priceold || currentPriceOld;
+        const updatedQuantity = quantity || currentQuantity;
+        const updatedSold = sold || currentSold;
+        const updatedSupplier = supplier || currentSupplier;
+        const updatedCategory = category || currentCategory;
+        const updatedDescribe = description|| currentDescribe;
+        const updatedTrademark = trademark || currentTrademark;
+        const updatedOrigin = origin || currentOrigin;
+        const updatedSex = sex || currentSex;
+        const updatedSkinProblems = skinproblems || currentSkinProblems;
+        const updatedAddToCart = addtocart || currentAddToCart;
+        const updatedAddToFavorite = addtofavorite || currentAddToFavorite;
+        const updatedShare = share || currentShare;
+        const updatedRain = rain || currentRain;
+        const updatedActive = active || currentActive;
+        const selectQuery = "SELECT image FROM product WHERE id = ?"
+        database.query(selectQuery, id, (error, result) => {
+            console.log(result)
+            if (error) throw error
+            try {
+                // Get value from key image
+                var image = result[0]['image'];
+                fileSystem.unlinkSync(image);
+            } catch (err) {
+                console.error("Can't find file in storage/pictures Path");
+            }
+        });
+        const query = "UPDATE product SET product_name = ?, price = ?, priceold = ?, quantity = ?, sold = ?, supplier = ?, image = ?, category = ?, description= ?, trademark = ?, origin = ?, sex = ?, skinproblems = ?, addtocart = ?, addtofavorite = ?, share = ?, rain = ?, active = ? WHERE id = ?";
+        const args = [
+            updatedProductName,
+            updatedPrice,
+            updatedPriceOld,
+            updatedQuantity,
+            updatedSold,
+            updatedSupplier,
+            filePath || currentImage,
+            updatedCategory,
+            updatedDescribe,
+            updatedTrademark,
+            updatedOrigin,
+            updatedSex,
+            updatedSkinProblems,
+            updatedAddToCart,
+            updatedAddToFavorite,
+            updatedShare,
+            updatedRain,
+            updatedActive,
+            id
+        ];
+        database.query(query, args, (error, result) => {
+            if (error) throw error
+            if (result['affectedRows'] == 1) {
+                response.status(200).send("Product is updated")
+            } else {
+                response.status(500).send("Invalid Update")
+            }
+        });
+    });
+});
 module.exports = router
