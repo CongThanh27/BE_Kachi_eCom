@@ -34,6 +34,8 @@ router.get("/", (request, response) => {
                  product.category, 
                  product.quantity, 
                  product.supplier, 
+                 cart.quantity as cartquantity,
+                 user.name as username,
                  (SELECT IF(COUNT(*) >= 1, TRUE, FALSE) FROM favorite WHERE favorite.user_id = ? AND favorite.product_id = product.id) as isFavourite
                  FROM Cart JOIN product JOIN User 
                  ON cart.product_id = product.id AND cart.user_id = user.id 

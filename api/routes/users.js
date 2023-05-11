@@ -94,7 +94,7 @@ router.get("/", (request, response) => {
 router.get("/login", (request, response) => {
     const email = request.query.email;
     const password = request.query.password;
-    const query = "SELECT id, password, name, email, if(isAdmin=1,  'true', 'false') as isAdmin FROM user WHERE email = ?";
+    const query = "SELECT id, password, name, email, if(isAdmin=1,  'true', 'false') as isAdmin, address, gender, age, phone_number FROM user WHERE email = ?";
     const args = [email];
     database.query(query, args, (error, result) => {
         if(error) throw error;
@@ -104,6 +104,10 @@ router.get("/login", (request, response) => {
                 "name" : result[0]["name"],
                 "email" : result[0]["email"],
                 "isAdmin" : result[0]["isAdmin"],
+                "address" : result[0]["address"],
+                "gender" : result[0]["gender"],
+                "age" : result[0]["age"],
+                "phone_number" : result[0]["phone_number"],
                 "error" : false, 
                 "message" : "Successful Login"
             });
@@ -254,26 +258,22 @@ router.delete("/:id", checkAuth, (request, response) => {
 });
  
 // Update Password
-router.put("/info", checkAuth, (request, response) => {
+// bỏ phần checkAuth,
+router.put("/info",  (request, response) => {
     const id = request.query.id;
     const password = request.query.password;
 
-    const query = "UPDATE user SET password = ? WHERE id = ?"    
-   
-    // Encrypt Password
-    bcrypt.hash(password, 10, (error, hashedPassword) => {
-        if(error) throw error
+    const query = "UPDATE user SET password = ? WHERE id = ?";
+    const args = [password, id];
 
-        const args = [hashedPassword,id]
-
-        database.query(query, args, (error, result) => {
-            if(result['affectedRows']  == 1){
-                response.status(200).send("Password is updated")
-            }else{
-                response.status(500).send("Invalid Update")
-            }
-        });
-
+    database.query(query, args, (error, result) => {
+        if (error) {
+            throw error;
+        } else if (result['affectedRows'] == 1) {
+            response.status(200).send("Password is updated");
+        } else {
+            response.status(500).send("Invalid Update");
+        }
     });
 });
 
@@ -341,7 +341,8 @@ router.get("/getImage", (request, response) => {
 
 
 // Get OTP
-router.get("/otp", checkAuth, (request, response) => {
+
+router.get("/otp", (request, response) => {
     const email = request.query.email
 
     const args = [email];
@@ -369,5 +370,88 @@ router.get("/otp", checkAuth, (request, response) => {
     })
 });
 
+//lấy thông tin user truyền vào id
+router.get("/thongtindathang", (request, response) => {
+    const id = request.query.id;  
+    const query = "SELECT * from user WHERE id = ?"    
+        const args = [id]
+        database.query(query, args, (error, result) => {
+            if(error) throw error
+            response.status(200).json({
+                "user" : result[0],
+            })
+        });
+
+});
+// Cập nhật user
+router.put("/adupdate", uploadImage.single('image'), (request, response) => {
+    const id = request.body.id;
+    const { 
+        name, 
+        email, 
+        password, 
+        gender, 
+        age, 
+        isAdmin,
+    } = request.body;
+    const file = request.file;
+    var filePath = ""
+    if (file != null) {
+        filePath = file.path
+    }
+    // Lấy thông tin user hiện có trong database
+    const selectQuery = "SELECT * FROM user WHERE id = ?";
+    database.query(selectQuery, id, (error, result) => {
+        if (error) throw error;
+        // Lấy giá trị của các thuộc tính hiện tại
+        const {
+            name: currentName,
+            email: currentEmail,
+            password: currentPassword,
+            gender: currentGender,
+            age: currentAge,
+            image: currentImage,
+            isAdmin: currentIsAdmin,
+        } = result[0];
+        // Sử dụng giá trị từ database nếu các thuộc tính bị thiếu
+        const updatedName = name || currentName;
+        const updatedEmail = email || currentEmail;
+        const updatedPassword = password || currentPassword;
+        const updatedGender = gender || currentGender;
+        const updatedAge = age || currentAge;
+        const updatedIsAdmin = isAdmin || currentIsAdmin;
+        const selectQuery = "SELECT image FROM user WHERE id = ?"
+        database.query(selectQuery, id, (error, result) => {
+            console.log(result)
+            if (error) throw error
+            try {
+                // Get value from key image
+                var image = result[0]['image'];
+                fileSystem.unlinkSync(image);
+            } catch (err) {
+                console.error("Can't find file in storage/pictures Path");
+            }
+        });
+        const query = "UPDATE user SET name = ?, email = ?, password = ?, gender = ?, age = ?, image = ?, isAdmin = ? WHERE id = ?";
+        const args = [
+            updatedName,
+            updatedEmail,
+            updatedPassword,
+            updatedGender,
+            updatedAge,
+            filePath || currentImage,
+            updatedIsAdmin,
+            id
+        ];
+        database.query(query, args, (error, result) => {
+            if (error) throw error
+            if (result['affectedRows'] == 1) {
+                response.status(200).send("User information is updated")
+            } else {
+                response.status(500).send("Invalid Update")
+            }
+        });
+    });
+});
 
 module.exports = router
