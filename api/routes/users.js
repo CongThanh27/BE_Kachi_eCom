@@ -94,8 +94,8 @@ router.get("/", (request, response) => {
 router.get("/login", (request, response) => {
     const email = request.query.email;
     const password = request.query.password;
-    const query = "SELECT id, password, name, email, if(isAdmin=1,  'true', 'false') as isAdmin, address, gender, age, phone_number FROM user WHERE email = ?";
-    const args = [email];
+    const query = "SELECT id, password, name, email, if(isAdmin=1,  'true', 'false') as isAdmin, address, gender, age, phone_number FROM user WHERE email = ? and password = ?";
+    const args = [email,password];
     database.query(query, args, (error, result) => {
         if(error) throw error;
         if(result.length == 1){
@@ -453,5 +453,8 @@ router.put("/adupdate", uploadImage.single('image'), (request, response) => {
         });
     });
 });
+
+
+
 
 module.exports = router

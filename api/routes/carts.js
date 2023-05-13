@@ -55,10 +55,11 @@ router.get("/", (request, response) => {
 router.post("/add", (request, response) => {
     const userId = request.body.userId
     const productId = request.body.productId
+    const quantity = request.body.quantity
   
-    const query = "INSERT INTO cart(user_Id, product_Id) VALUES(?, ?)"
+    const query = "INSERT INTO cart(user_Id, product_Id,quantity) VALUES(?, ?,?)"
    
-    const args = [userId, productId]
+    const args = [userId, productId,quantity]
 
     database.query(query, args, (error, result) => {
         if (error) {

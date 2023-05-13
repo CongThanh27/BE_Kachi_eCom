@@ -251,9 +251,9 @@ router.post("/insert", checkAuth, uploadImage.single('image'), (request, respons
         filePath = file.path
     }
 
-    const query = "INSERT INTO product(product_name, price, quantity, supplier, category, image, describe, trademark, origin, sex, skinproblems, active) VALUES(?, ?, ?, ?, ?,?)"
+    const query = "INSERT INTO product(product_name, price, quantity, supplier, category, image, description, trademark, origin, sex, skinproblems, active,share,addtofavorite,rain,addtocart,priceold,sold) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 
-    const args = [name, price, quantity, supplier, category, filePath, describe, trademark, origin, sex, skinproblems, 1]
+    const args = [name, price, quantity, supplier, category, filePath, description, trademark, origin, sex, skinproblems, 1, null, null, null, null, price, 0]
 
     database.query(query, args, (error, result) => {
         if (error) throw error
@@ -809,4 +809,52 @@ router.put("/adupdate", uploadImage.single('image'), (request, response) => {
         });
     });
 });
+
+//Thống kê top 10 sản phẩm bán chạy nhất
+router.get("/top10banchay", (request, response) => {
+    const query = `SELECT * FROM product ORDER BY sold DESC`
+    database.query(query, (error, result) => {
+        if (error) throw error
+        response.status(200).json({
+            "products": result
+        })
+    });
+
+})
+//Thống kê top 10 sản phẩm được yêu thích nhất
+router.get("/top10yeuthich", (request, response) => {
+    const query = `SELECT * FROM product ORDER BY addtofavorite DESC`
+    database.query(query, (error, result) => {
+        if (error) throw error
+        response.status(200).json({
+            "products": result
+        })
+    });
+
+})
+//Thống kê top 10 sản phẩm được chia sẻ nhiều nhất
+router.get("/top10chiase", (request, response) => {
+    const query = `SELECT * FROM product ORDER BY share DESC`
+    database.query(query, (error, result) => {
+        if (error) throw error
+        response.status(200).json({
+            "products": result
+        })
+    });
+
+})
+//Thống kê top 10 sản phẩm đánh giá cao
+router.get("/top10danhgia", (request, response) => {
+    const query = `SELECT * FROM product ORDER BY rain DESC`
+    database.query(query, (error, result) => {
+        if (error) throw error
+        response.status(200).json({
+            "products": result
+        })
+    });
+
+})
+
+
+
 module.exports = router
