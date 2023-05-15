@@ -232,13 +232,13 @@ router.get("/search", (request, response) => {
 });
 
 // Insert Product
-router.post("/insert", checkAuth, uploadImage.single('image'), (request, response) => {
+router.post("/insert", uploadImage.single('image'), (request, response) => {
     const name = request.body.name
     const price = request.body.price
     const quantity = request.body.quantity
     const supplier = request.body.supplier
     const category = request.body.category
-    const description= request.body.describe
+    const description = request.body.describe
     const trademark = request.body.trademark
     const origin = request.body.origin
     const sex = request.body.sex
@@ -855,6 +855,18 @@ router.get("/top10danhgia", (request, response) => {
 
 })
 
-
+router.get("/CountStatus", (request, response) => {
+    const query = `
+        SELECT status, COUNT(*) AS count
+        FROM ordering
+        GROUP BY status
+    `
+    database.query(query, (error, result) => {
+        if (error) throw error;
+        response.status(200).json({
+            "statusCounts": result
+        });
+    });
+});
 
 module.exports = router

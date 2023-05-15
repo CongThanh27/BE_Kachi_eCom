@@ -455,6 +455,22 @@ router.put("/adupdate", uploadImage.single('image'), (request, response) => {
 });
 
 
-
+router.put("/capnhatdiachi", (request, response) => {
+    const id = request.query.id;
+    const address = request.query.address;
+    const phone_number = request.query.phone_number;
+    const query = `UPDATE user SET address = ?, phone_number = ? WHERE id = ?`;
+    const args = [address, phone_number, id];
+    database.query(query, args, (error, result) => {
+        if (error) {
+            if (error.code === 'ER_DUP_ENTRY') {
+                response.status(500).send("Deplicate Entry")
+            } else {
+                throw error;
+            }
+        }
+        response.status(200).send("Thành công")
+    });
+});
 
 module.exports = router

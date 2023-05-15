@@ -15,6 +15,7 @@ router.post("/add", (request, response) => {
     const userId = request.body.userId
     const productId = request.body.productId
 
+
     const query = "INSERT INTO Shipping(address, city ,country, zip,phone,user_id, product_id) VALUES(?,?,?,?,?,?,?)"
 
     const args = [address, city, country, zip, phone, userId, productId]
@@ -31,5 +32,24 @@ router.post("/add", (request, response) => {
         }
     });
 });
+router.get("/getShippingInfo", (request, response) => {
+    var userId = request.query.userId;
+
+    const query = `
+        SELECT DISTINCT address, phone
+        FROM Shipping
+        WHERE user_id = ?
+        
+    `;
+    const args = [userId];
+    database.query(query, args, (error, results) => {
+        if (error) throw error;
+        response.status(200).json({
+            "error": false,
+            "shippingInfo": results
+        });
+    });
+});
+
 
 module.exports = router

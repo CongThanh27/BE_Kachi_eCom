@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 
-
 // Deal with file
 const fileSystem = require('fs');
 
@@ -23,10 +22,8 @@ const uploadImage = multer({
     storage: storage,
 });
 
-
 // import file
 const database = require("../../config")
-
 
 // Insert Poster
 router.post("/insert", uploadImage.single('image'), (request, response) => {
@@ -45,7 +42,6 @@ router.post("/insert", uploadImage.single('image'), (request, response) => {
         response.status(200).send("Poster Inserted")
     });
 });
-
 // Get posters
 router.get("/", (request, response) => {
    
@@ -59,8 +55,6 @@ router.get("/", (request, response) => {
         })
     });
 }); 
-
-
 // Update Poster
 router.put("/update", uploadImage.single('image'), (request, response) => {
     const id = request.body.id;
@@ -101,8 +95,6 @@ router.put("/update", uploadImage.single('image'), (request, response) => {
         }
     });
 });
-
-
 // Delete Poster
 router.delete("/:id", (request, response) => {
     const id = request.params.id;
